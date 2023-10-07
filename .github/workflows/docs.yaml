@@ -1,0 +1,38 @@
+name: Build Documentation
+
+on:
+    push:
+        branches: 
+            - master
+
+jobs:
+    build_documentation:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                php: [8.2]
+        name: Build Documentation for PHP ${{ matrix.php }}
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                php-version: ${{ matrix.php }}
+                tools: composer, phpdoc
+            - name: Cache Dependencies
+              uses: actions/cache@v3
+              id: cache
+              with:
+                path: vendor/
+                key: ${{ matrix.php }}-${{ hashFiles('composer.lock') }}
+            - name: Install Dependencies
+              run: composer install --no-interaction --no-dev --optimize-autoloader
+            - name: Generate Documentation
+              run: phpdoc -c phpdoc.xml
+            - name: Store Artifacts
+              uses: actions/upload-artifact@v3
+              with:
+                name: docs
+                path: docs/
+                retention-days: 14

@@ -1,6 +1,5 @@
 ## Ignore Composer 
 vendor
-*.lock
 *.phar
 
 ## Ignore Visual Studio temporary files, build results, and
