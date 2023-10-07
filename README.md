@@ -153,14 +153,14 @@ $telemetryClient->flush();
 time**
 
 ```php
-$telemetryClient->trackRequest('myRequest', 'https://foo.bar', time());
+$telemetryClient->trackRequest('myRequest', 'https://foo.bar', new \DateTime());
 $telemetryClient->flush();
 ```
 
 ### Sending a request telemetry item with duration, http status code, whether the request succeeded, custom properties and measurements
 
 ```php
-$telemetryClient->trackRequest('myRequest', 'https://foo.bar', time(), 3754, 200, true, ['InlineProperty' => 'test_value'], ['duration_inner' => 42.0]);
+$telemetryClient->trackRequest('myRequest', 'https://foo.bar', new \DateTime(), 3754, 200, true, ['InlineProperty' => 'test_value'], ['duration_inner' => 42.0]);
 $telemetryClient->flush();
 ```
 
@@ -213,21 +213,21 @@ class Handle_Exceptions
 ### Sending a successful SQL dependency telemetry item
 
 ```php
-$telemetryClient->trackDependency('Query table', "SQL", 'SELECT * FROM table;', time(), 122, true);
+$telemetryClient->trackDependency('Query table', "SQL", 'SELECT * FROM table;', new \DateTime(), 122, true);
 $telemetryClient->flush();
 ```
 
 ### Sending a failed HTTP dependency telemetry item
 
 ```php
-$telemetryClient->trackDependency('method', "HTTP", "https://example.com/api/method", time(), 324, false, 503);
+$telemetryClient->trackDependency('method', "HTTP", "https://example.com/api/method", new \DateTime(), 324, false, 503);
 $telemetryClient->flush();
 ```
 
 ### Sending any other kind dependency telemetry item
 
 ```php
-$telemetryClient->trackDependency('Name of operation', "service", 'Arguments', time(), 23, true);
+$telemetryClient->trackDependency('Name of operation', "service", 'Arguments', new \DateTime(), 23, true);
 $telemetryClient->flush();
 ```
 
