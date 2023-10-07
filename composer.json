@@ -1,21 +1,34 @@
 {
-    "name": "microsoft/application-insights",
+    "name": "whisker/application-insights",
     "description": "This project extends the Application Insights API surface to support PHP.",
     "type": "library",
-    "keywords": ["log","logging","telemetry","insights","monitoring"],
-    "homepage": "https://github.com/Microsoft/ApplicationInsights-PHP",
+    "keywords": [
+        "log",
+        "logging",
+        "telemetry",
+        "insights",
+        "monitoring"
+    ],
+    "version": "0.5.0",
+    "homepage": "https://github.com/Automated-Pet-Care-Products/ApplicationInsights-PHP",
     "license": "MIT",
     "require": {
-        "php": ">=5.4.0",
-        "guzzlehttp/guzzle": ">=5.0 <=6.3.3"
+        "php": ">=8.2",
+        "psr/http-message": "^2.0",
+        "psr/http-client": "^1.0",
+        "psr/http-factory": "^1.0",
+        "ext-zlib": "*",
+        "ext-mbstring": "*",
+        "ext-curl": "*",
+        "php-ds/php-ds": "^1.4"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.8.36",
-        "evert/phpdoc-md" : "~0.0.7"
+        "phpunit/phpunit": "^10.3",
+        "evert/phpdoc-md": "^0.2"
     },
     "autoload": {
         "psr-4": {
-            "ApplicationInsights\\": "ApplicationInsights/"
+            "ApplicationInsights\\": "src/"
         }
     },
     "autoload-dev": {

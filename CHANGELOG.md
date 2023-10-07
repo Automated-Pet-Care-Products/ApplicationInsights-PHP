@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5
+
+- Removed Guzzle
+- Added requirement to specify a PSR-7 compliant HTTP client
+- Added strict typing
+- Fixed millisecond recording
+
 ## 0.4.6 (unreleased)
 
 TBD

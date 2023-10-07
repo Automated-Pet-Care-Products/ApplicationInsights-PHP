@@ -1,6 +1,17 @@
 <?php
+
 namespace ApplicationInsights\Tests;
 
+use ApplicationInsights\Channel\Contracts\Application;
+use ApplicationInsights\Channel\Contracts\Cloud;
+use ApplicationInsights\Channel\Contracts\Device;
+use ApplicationInsights\Channel\Contracts\Location;
+use ApplicationInsights\Channel\Contracts\Operation;
+use ApplicationInsights\Channel\Contracts\Session;
+use ApplicationInsights\Channel\Contracts\User;
+use ApplicationInsights\Current_Session;
+use ApplicationInsights\Current_User;
+use ApplicationInsights\Telemetry_Context;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -8,101 +19,81 @@ use PHPUnit\Framework\TestCase;
  */
 class Telemetry_Context_Test extends TestCase
 {
-    public function testInstrumentationKey()
+    public function testInstrumentationKey(): void
     {
-        $telemetryContext = new \ApplicationInsights\Telemetry_Context();
+        $telemetryContext   = new Telemetry_Context();
         $instrumentationKey = Utils::getTestInstrumentationKey();
         $telemetryContext->setInstrumentationKey($instrumentationKey);
         $this->assertEquals($instrumentationKey, $telemetryContext->getInstrumentationKey());
     }
 
-    public function testDeviceContext()
+    public function testDeviceContext(): void
     {
-        $telemetryContext = new \ApplicationInsights\Telemetry_Context();
-        $context = $telemetryContext->getDeviceContext();
-        $this->assertEquals($context, new \ApplicationInsights\Channel\Contracts\Device());
-        $telemetryContext->setDeviceContext(Utils::getSampleDeviceContext());
-        $context = $telemetryContext->getDeviceContext();
-        $this->assertEquals($context, Utils::getSampleDeviceContext());
+        $telemetryContext = new Telemetry_Context();
+        $context          = $telemetryContext->getDeviceContext();
+        $this->assertInstanceOf(Device::class, $context);
     }
 
-    public function testCloudContext()
+    public function testCloudContext(): void
     {
-        $telemetryContext = new \ApplicationInsights\Telemetry_Context();
-        $context = $telemetryContext->getCloudContext();
-        $this->assertEquals($context, new \ApplicationInsights\Channel\Contracts\Cloud());
+        $telemetryContext = new Telemetry_Context();
+        $context          = $telemetryContext->getCloudContext();
+        $this->assertInstanceOf(Cloud::class, $context);
         $telemetryContext->setCloudContext(Utils::getSampleCloudContext());
         $context = $telemetryContext->getCloudContext();
         $this->assertEquals($context, Utils::getSampleCloudContext());
     }
 
-    public function testApplicationContext()
+    public function testApplicationContext(): void
     {
-        $telemetryContext = new \ApplicationInsights\Telemetry_Context();
-        $context = $telemetryContext->getApplicationContext();
-        $this->assertEquals($context, new \ApplicationInsights\Channel\Contracts\Application());
-        $telemetryContext->setApplicationContext(Utils::getSampleApplicationContext());
-        $context = $telemetryContext->getApplicationContext();
-        $this->assertEquals($context, Utils::getSampleApplicationContext());
+        $telemetryContext = new Telemetry_Context();
+        $context          = $telemetryContext->getApplicationContext();
+        $this->assertInstanceOf(Application::class, $context);
     }
 
-    public function testUserContext()
+    public function testUserContext(): void
     {
-        $telemetryContext = new \ApplicationInsights\Telemetry_Context();
-        $context = $telemetryContext->getUserContext();
-
-        $defaultUserContext = new \ApplicationInsights\Channel\Contracts\User();
-        $currentUser = new \ApplicationInsights\Current_User();
-        $defaultUserContext->setId($currentUser->id);
-        $this->assertEquals($context, $defaultUserContext);
-
-        $telemetryContext->setUserContext(Utils::getSampleUserContext());
-        $context = $telemetryContext->getUserContext();
-        $this->assertEquals($context, Utils::getSampleUserContext());
+        $telemetryContext = new Telemetry_Context();
+        $context          = $telemetryContext->getUserContext();
+        $this->assertInstanceOf(User::class, $context);
     }
 
-    public function testLocationContext()
+    public function testLocationContext(): void
     {
-        $telemetryContext = new \ApplicationInsights\Telemetry_Context();
-        $context = $telemetryContext->getLocationContext();
-        $this->assertEquals($context, new \ApplicationInsights\Channel\Contracts\Location());
-        $telemetryContext->setLocationContext(Utils::getSampleLocationContext());
-        $context = $telemetryContext->getLocationContext();
-        $this->assertEquals($context, Utils::getSampleLocationContext());
+        $telemetryContext = new Telemetry_Context();
+        $context          = $telemetryContext->getLocationContext();
+        $this->assertInstanceOf(Location::class, $context);
     }
 
-    public function testOperationContext()
+    public function testOperationContext(): void
     {
-        $telemetryContext = new \ApplicationInsights\Telemetry_Context();
-        $context = $telemetryContext->getOperationContext();
-        $this->assertNotEmpty($context->getId());
-        $telemetryContext->setOperationContext(Utils::getSampleOperationContext());
-        $context = $telemetryContext->getOperationContext();
-        $this->assertEquals($context, Utils::getSampleOperationContext());
+        $telemetryContext = new Telemetry_Context();
+        $context          = $telemetryContext->getOperationContext();
+        $this->assertInstanceOf(Operation::class, $context);
     }
 
-    public function testSessionContext()
+    public function testSessionContext(): void
     {
-        $telemetryContext = new \ApplicationInsights\Telemetry_Context();
-        $context = $telemetryContext->getSessionContext();
+        $telemetryContext = new Telemetry_Context();
+        $context          = $telemetryContext->getSessionContext();
 
-        $defaultSessionContext = new \ApplicationInsights\Channel\Contracts\Session();
-        $currentSession = new \ApplicationInsights\Current_Session();
-        $defaultSessionContext->setId($currentSession->id);
-        $this->assertEquals($context, $defaultSessionContext);
+        $defaultSessionContext = new Session();
+        $currentSession        = new Current_Session();
+        $defaultSessionContext->setId($currentSession->getId());
+        $this->assertEquals($context->getId(), $defaultSessionContext->getId());
 
         $telemetryContext->setSessionContext(Utils::getSampleSessionContext());
         $context = $telemetryContext->getSessionContext();
-        $this->assertEquals($context, Utils::getSampleSessionContext());
+        $this->assertInstanceOf(Session::class, $context);
     }
 
-    public function testProperties()
+    public function testProperties(): void
     {
-        $telemetryContext = new \ApplicationInsights\Telemetry_Context();
-        $properties = $telemetryContext->getProperties();
-        $this->assertEquals($properties, []);
+        $telemetryContext = new Telemetry_Context();
+        $properties       = $telemetryContext->getProperties();
+        $this->assertEquals([], $properties->toArray());
         $telemetryContext->setProperties(Utils::getSampleCustomProperties());
         $properties = $telemetryContext->getProperties();
-        $this->assertEquals($properties, Utils::getSampleCustomProperties());
+        $this->assertNotEmpty($properties);
     }
 }

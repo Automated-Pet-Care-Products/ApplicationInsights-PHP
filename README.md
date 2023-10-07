@@ -6,7 +6,7 @@
 This project extends the Application Insights API surface to support PHP.
 [Application
 Insights](https://azure.microsoft.com/services/application-insights/) is a
-service that allows developers to keep their application available,  performing
+service that allows developers to keep their application available, performing
 and succeeding. This PHP module will allow you to send telemetry of various
 kinds (event, trace, exception, etc.) to the Application Insights service where
 they can be visualized in the Azure Portal.
@@ -17,24 +17,32 @@ This SDK is NOT maintained or supported by Microsoft even though we've contribut
 
 ## Requirements
 
-PHP version >=5.4.2 is supported.
+PHP version >= 8.2 is supported.
 
-For opening the project in Microsoft Visual Studio you will need [PHP Tools for Visual Studio](https://www.devsense.com/products/php-tools). This is not required however.
+For opening the project in Microsoft Visual Studio,
+you will need [PHP Tools for Visual Studio](https://www.devsense.com/products/php-tools).
+
+This is not required, however. You should use PHPStorm.
 
 ## Installation
 
 We've published a package you can find on [Packagist](https://packagist.org/packages/microsoft/application-insights). In order to use it, first, you'll need to get [Composer](https://getcomposer.org/).
 
-Once you've setup your project to use Composer, just add a reference to our package with whichever version you'd like to use to your composer.json file.
+Once you've set up your project to use Composer,
+just add a reference to our package with whichever version you'd like to use to your composer.json file.
 
 ```json
-require: "microsoft/application-insights": "*"
+{
+  "require": {
+    "whisker/application-insights": "*"
+  }
+}
 ```
 
 Or you can use the composer command to automatically add the package to your composer.json file.
 
-```json
-composer require microsoft/application-insights
+```shell
+composer require whisker/application-insights
 ```
 
 Make sure you add the require statement to pull in the library:
@@ -47,12 +55,16 @@ require_once 'vendor/autoload.php';
 
 Once installed, you can send telemetry to Application Insights. Here are a few samples.
 
->**Note**: before you can send data to you will need an instrumentation key. Please see the [Getting an Application Insights Instrumentation Key](https://github.com/Microsoft/AppInsights-Home/wiki#getting-an-application-insights-instrumentation-key) section for more information.
+>**Note**: before you can send data to Azure, you will need an instrumentation key. Please see the [Getting an Application Insights Instrumentation Key](https://github.com/Microsoft/AppInsights-Home/wiki#getting-an-application-insights-instrumentation-key) section for more information.
 
 ### Initializing the client and setting the instrumentation key and other optional configurations
 
 ```php
-$telemetryClient = new \ApplicationInsights\Telemetry_Client();
+/**
+ * Use PSR-7 compliant HTTP client
+ */
+$httpClient = new Psr\Http\ClientInterface();
+$telemetryClient = new \src\Telemetry_Client($httpClient);
 $context = $telemetryClient->getContext();
 
 // Necessary
@@ -69,9 +81,9 @@ $telemetryClient->trackEvent('name of your event');
 $telemetryClient->flush();
 ```
 
-### Setup Operation context
+### Set up Operation context
 
-For correct Application Insights reporting you need to setup Operation Context,
+For correct Application Insights reporting you need to set up Operation Context,
 reference to Request
 
 ```php
@@ -105,14 +117,14 @@ $telemetryClient->flush();
 ### Sending a simple page view telemetry item with page name and url
 
 ```php
-$telemetryClient->trackPageView('myPageView', 'http://www.foo.com');
+$telemetryClient->trackPageView('myPageView', 'https://www.foo.com');
 $telemetryClient->flush();
 ```
 
-### Sending a page view telemetry item with duration, custom properties and measurements
+### Sending a page view telemetry item with duration, custom properties, and measurements
 
 ```php
-$telemetryClient->trackPageView('myPageView', 'http://www.foo.com', 256, ['InlineProperty' => 'test_value'], ['duration' => 42.0]);
+$telemetryClient->trackPageView('myPageView', 'https://www.foo.com', 256, ['InlineProperty' => 'test_value'], ['duration' => 42.0]);
 $telemetryClient->flush();
 ```
 
@@ -123,17 +135,17 @@ $telemetryClient->trackMetric('myMetric', 42.0);
 $telemetryClient->flush();
 ```
 
-### Sending a metric telemetry item with point type, count, min, max, standard deviation and measurements
+### Sending a metric telemetry item with a point type, count, min, max, standard deviation, and measurements
 
 ```php
-$telemetryClient->trackMetric('myMetric', 42.0, \ApplicationInsights\Channel\Contracts\Data_Point_Type::Aggregation, 5, 0, 1, 0.2, ['InlineProperty' => 'test_value']);
+$telemetryClient->trackMetric('myMetric', 42.0, \src\Channel\Contracts\Data_Point_Type::Aggregation, 5, 0, 1, 0.2, ['InlineProperty' => 'test_value']);
 $telemetryClient->flush();
 ```
 
-### Sending a simple message telemetry item with message
+### Sending a simple message telemetry item with a message
 
 ```php
-$telemetryClient->trackMessage('myMessage', \ApplicationInsights\Channel\Contracts\Message_Severity_Level::INFORMATION, ['InlineProperty' => 'test_value']);
+$telemetryClient->trackMessage('myMessage', \src\Channel\Contracts\Message_Severity_Level::INFORMATION, ['InlineProperty' => 'test_value']);
 $telemetryClient->flush();
 ```
 
@@ -141,14 +153,14 @@ $telemetryClient->flush();
 time**
 
 ```php
-$telemetryClient->trackRequest('myRequest', 'http://foo.bar', time());
+$telemetryClient->trackRequest('myRequest', 'https://foo.bar', time());
 $telemetryClient->flush();
 ```
 
-### Sending a request telemetry item with duration, http status code, whether or not the request succeeded, custom properties and measurements
+### Sending a request telemetry item with duration, http status code, whether the request succeeded, custom properties and measurements
 
 ```php
-$telemetryClient->trackRequest('myRequest', 'http://foo.bar', time(), 3754, 200, true, ['InlineProperty' => 'test_value'], ['duration_inner' => 42.0]);
+$telemetryClient->trackRequest('myRequest', 'https://foo.bar', time(), 3754, 200, true, ['InlineProperty' => 'test_value'], ['duration_inner' => 42.0]);
 $telemetryClient->flush();
 ```
 
@@ -181,7 +193,7 @@ class Handle_Exceptions
 
     public function __construct()
     {
-        $this->_telemetryClient = new \ApplicationInsights\Telemetry_Client();
+        $this->_telemetryClient = new \src\Telemetry_Client();
         $this->_telemetryClient->getContext()->setInstrumentationKey('YOUR INSTRUMENTATION KEY');
 
         set_exception_handler(array($this, 'exceptionHandler'));
@@ -208,7 +220,7 @@ $telemetryClient->flush();
 ### Sending a failed HTTP dependency telemetry item
 
 ```php
-$telemetryClient->trackDependency('method', "HTTP", "http://example.com/api/method", time(), 324, false, 503);
+$telemetryClient->trackDependency('method', "HTTP", "https://example.com/api/method", time(), 324, false, 503);
 $telemetryClient->flush();
 ```
 
@@ -223,10 +235,14 @@ $telemetryClient->flush();
 
 ```php
 $telemetryClient->trackMetric('interestingMetric', 10);
-$telemetryClient->getContext()->getOperationContext()->setId(\ApplicationInsights\Channel\Contracts\Utils::returnGuid())
+$telemetryClient->getContext()->getOperationContext()->setId(\src\Channel\Contracts\Utils::returnGuid())
 $telemetryClient->trackMetric('differentOperationMetric', 11);
 $telemetryClient->flush();
 ```
+
 ## Code of conduct
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+For more information,
+see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/)
+or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.

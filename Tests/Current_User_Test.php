@@ -1,6 +1,11 @@
 <?php
+
+declare(strict_types=1);
+
 namespace ApplicationInsights\Tests;
 
+use ApplicationInsights\Channel\Contracts\Utils as Utilities;
+use ApplicationInsights\Current_User;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -8,15 +13,15 @@ use PHPUnit\Framework\TestCase;
  */
 class Current_User_Test extends TestCase
 {
-    private $userId;
+    private string $userId;
 
-    protected function setUp()
+    public function setUp(): void
     {
-        $this->userId = \ApplicationInsights\Channel\Contracts\Utils::returnGuid();
+        $this->userId = Utilities::returnGuid();
         Utils::setUserCookie($this->userId);
     }
 
-    protected function tearDown()
+    public function tearDown(): void
     {
         Utils::clearUserCookie();
     }
@@ -24,9 +29,9 @@ class Current_User_Test extends TestCase
     /**
      * Verifies the object is constructed properly.
      */
-    public function testConstructor()
+    public function testConstructor(): void
     {
-        $currentUser = new \ApplicationInsights\Current_User();
+        $currentUser = new Current_User();
 
         $this->assertEquals($currentUser->id, $this->userId);
     }
@@ -34,12 +39,11 @@ class Current_User_Test extends TestCase
     /**
      * Verifies the object is constructed properly.
      */
-    public function testConstructorWithNoCookie()
+    public function testConstructorWithNoCookie(): void
     {
         Utils::clearUserCookie();
-        $currentUser = new \ApplicationInsights\Current_User();
+        $currentUser = new Current_User();
 
-        $this->assertTrue($currentUser->id != NULL && $currentUser->id != $this->userId);
+        $this->assertTrue($currentUser->id !== NULL && $currentUser->id !== $this->userId);
     }
-
 }

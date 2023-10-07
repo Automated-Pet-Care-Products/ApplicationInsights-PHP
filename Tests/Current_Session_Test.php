@@ -1,6 +1,14 @@
 <?php
+
+declare(strict_types=1);
+
 namespace ApplicationInsights\Tests;
 
+use ApplicationInsights\Channel\Contracts\Utils as Utilities;
+use ApplicationInsights\Current_Session;
+use DateInterval;
+use DateTime;
+use DateTimeInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -8,19 +16,27 @@ use PHPUnit\Framework\TestCase;
  */
 class Current_Session_Test extends TestCase
 {
-    private $sessionId;
-    private $sessionCreatedTime;
-    private $sessionLastRenewedTime;
+    private string            $sessionId;
+    private DateTimeInterface $sessionCreatedTime;
+    private DateTimeInterface $sessionLastRenewedTime;
 
-    protected function setUp()
+    public function setUp(): void
     {
-        $this->sessionId = \ApplicationInsights\Channel\Contracts\Utils::returnGuid();
-        $this->sessionCreatedTime = time();
-        $this->sessionLastRenewedTime = time() - 10000;
+        $this->sessionId              = Utilities::returnGuid();
+        $this->sessionCreatedTime     = new DateTime();
+        $this->sessionLastRenewedTime = (new DateTime())->sub(new DateInterval('PT10000S'));
         Utils::setSessionCookie($this->sessionId, $this->sessionCreatedTime, $this->sessionLastRenewedTime);
     }
 
-    protected function tearDown()
+    public function testDateTime(): void
+    {
+        $dateTime = new DateTime();
+        $ms       = (int)$dateTime->format(Utilities::T_DATETIME_FORMAT);
+
+        $this->assertGreaterThan(0, $ms);
+    }
+
+    public function tearDown(): void
     {
         Utils::clearSessionCookie();
     }
@@ -30,11 +46,18 @@ class Current_Session_Test extends TestCase
      */
     public function testConstructor()
     {
-        $currentSession = new \ApplicationInsights\Current_Session();
+        $currentSession = new Current_Session();
+        $this->assertEquals($currentSession->getId(), $this->sessionId);
 
-        $this->assertEquals($currentSession->id, $this->sessionId);
-        $this->assertEquals($currentSession->sessionCreated, $this->sessionCreatedTime);
-        $this->assertEquals($currentSession->sessionLastRenewed, $this->sessionLastRenewedTime);
+        $this->assertEquals(
+            $currentSession->getCreatedAt()->format(Utilities::T_DATETIME_FORMAT),
+            $this->sessionCreatedTime->format(Utilities::T_DATETIME_FORMAT)
+        );
+
+        $this->assertEquals(
+            $currentSession->getLastRenewedAt()->format(Utilities::T_DATETIME_FORMAT),
+            $this->sessionLastRenewedTime->format(Utilities::T_DATETIME_FORMAT)
+        );
     }
 
     /**
@@ -43,10 +66,10 @@ class Current_Session_Test extends TestCase
     public function testConstructorWithNoCookie()
     {
         Utils::clearSessionCookie();
-        $currentSession = new \ApplicationInsights\Current_Session();
+        $currentSession = new Current_Session();
 
-        $this->assertEquals($currentSession->id, NULL);
-        $this->assertEquals($currentSession->sessionCreated, NULL);
-        $this->assertEquals($currentSession->sessionLastRenewed, NULL);
+        $this->assertEquals(null, $currentSession->getId());
+        $this->assertEquals(null, $currentSession->getCreatedAt());
+        $this->assertEquals(null, $currentSession->getLastRenewedAt());
     }
 }
