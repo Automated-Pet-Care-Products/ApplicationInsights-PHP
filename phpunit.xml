@@ -1,11 +1,5 @@
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.3/phpunit.xsd" backupGlobals="true"
-         bootstrap="Tests/Bootstrap.php" colors="false"
-         processIsolation="false" stopOnError="false" stopOnFailure="false"
-         stopOnIncomplete="false" stopOnSkipped="false"
-         timeoutForSmallTests="1" timeoutForMediumTests="10" timeoutForLargeTests="60"
->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.3/phpunit.xsd" backupGlobals="true" bootstrap="Tests/Bootstrap.php" colors="false" processIsolation="false" stopOnError="false" stopOnFailure="false" stopOnIncomplete="false" stopOnSkipped="false" timeoutForSmallTests="1" timeoutForMediumTests="10" timeoutForLargeTests="60">
     <testsuite name="Tests">
-        <directory>Tests</directory>
+        <directory>tests</directory>
     </testsuite>
 </phpunit>
